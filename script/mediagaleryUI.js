@@ -77,13 +77,10 @@ function mediaGalery() {
     }
 
     this.Keymove = function (event) {
-
         event = (event) ? event : window.event;
-
         if (event)
         {
             var code = (event.charCode) ? event.charCode : event.keyCode;
-            console.log(code);
             switch(code)
             {
                 case 37:
