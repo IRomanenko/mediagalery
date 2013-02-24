@@ -21,6 +21,13 @@
 .MGHeader {
     height: 25px;
 }
+#mediaGalery .MGHeader {
+    font-size: 22px;
+    color: #87CEFA;
+}
+#MGImagesCounter {
+    
+}
 #MGClose {
     float: right;
     margin-top: 5px;

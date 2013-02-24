@@ -2,51 +2,28 @@
 
 /*
 * Required 1.8.3/jquery.min.js
-* MGImagesArray - GLOBAL array with links to images, required.
 */
-
-/* Array with list of images links */
-var MGImagesArray1 = [
-    'http://studyclub.dentistcalendar.com/view/static-resources/photo/-29087676_291980963.jpg', 
-    'http://studyclub.dentistcalendar.com/view/static-resources/photo/-29087676_291980964.jpg', 
-    'http://studyclub.dentistcalendar.com/view/static-resources/photo/test_student.jpg'];
-
-/*onclick hendlers*/
-$(document).ready(function(){
-
-    $("#kurs00").click(function() {
-        mediaGalery.Start(MGImagesArray1);
-    });
-
-    $(".MGForward").click(function() {
-        mediaGalery.Forward();
-    });
-
-    $(".MGBack").click(function() {
-        mediaGalery.Back();
-    });
-
-    $("#MGClose").click(function() {
-        $("#bg").css("display", "none");
-        $("#mediaGalery").css("display", "none");
-    });
-});
-
-window.mediaGalery = new mediaGalery();
 
 function mediaGalery() {
 
-    /* current image id */
-    this.currentImage = 0;
+    this.Start = function (URLImagesArrayInput) {
+        this.URLImagesArray = URLImagesArrayInput;
 
-    this.Start = function(URLImagesArray) {
-        this.URLImagesArray = URLImagesArray;
-        $("#MGCurrentImage").attr("src", URLImagesArray[mediaGalery.currentImage]);
+        /* current image id */
+        this.currentImage = 0;
+
+        /* curent imane number */
+        this.currentImageNumber = this.currentImage +1;
+
+        /* number of photos */
+        this.numberOfPhotos = this.URLImagesArray.length;
+
+        this.RenderImagesCounter();
+
+        $("#MGCurrentImage").attr("src", this.URLImagesArray[this.currentImage]);
         $("#bg").css("display", "block");
         $("#mediaGalery").css("display", "block");
         scrollTo('0', '0');
-
-        document.onkeypress = this.Keymove;
     }
 
     this.Onload = function() {
@@ -65,33 +42,48 @@ function mediaGalery() {
     }
 
     this.Forward = function() {
-        mediaGalery.currentImage++;
-
-        $("#MGCurrentImage").attr("src", this.URLImagesArray[mediaGalery.currentImage]);
+        if(this.currentImage < this.URLImagesArray.length - 1) {
+            $("#MGWaiting").css("display", "block");
+            $("#MGCurrentImage").css("display", "none");
+            this.currentImage++;
+            this.currentImageNumber++;
+            this.RenderImagesCounter();
+            $("#MGCurrentImage").attr("src", this.URLImagesArray[this.currentImage]);
+        }
     }
 
     this.Back = function() {
-        if(mediaGalery.currentImage >= 1)
+        if(mediaGalery.currentImage >= 1) {
+            $("#MGWaiting").css("display", "block");
+            $("#MGCurrentImage").css("display", "none");
             mediaGalery.currentImage--;
-
-        $("#MGCurrentImage").attr("src", this.URLImagesArray[mediaGalery.currentImage]);
+            this.currentImageNumber--;
+            this.RenderImagesCounter();
+            $("#MGCurrentImage").attr("src", this.URLImagesArray[mediaGalery.currentImage]);
+        }
     }
 
-    this.Keymove = function (event)
-    {
-        if (event.preventDefault) {
-        event.preventDefault();
-        event.stopPropagation();
-        } else {
-            event.returnValue = false;
-            event.cancelBubble = true;
-        }
+    /* render: curent photo number / all numbers of photos */
+    this.RenderImagesCounter = function () {
+        $("#MGImagesCounter").html(this.currentImageNumber + "/" + this.numberOfPhotos);
+    }
+
+    this.CloseMG = function () {
+        $("#MGCurrentImage").css("display", "none");
+        $("#MGCurrentImage").attr("src", "");
+        $("#bg").css("display", "none");
+        $("#mediaGalery").css("display", "none");
+        $("#MGWaiting").css("display", "block");
+    }
+
+    this.Keymove = function (event) {
 
         event = (event) ? event : window.event;
 
         if (event)
         {
             var code = (event.charCode) ? event.charCode : event.keyCode;
+            console.log(code);
             switch(code)
             {
                 case 37:
@@ -100,9 +92,14 @@ function mediaGalery() {
                 case 39:
                 mediaGalery.Forward();
                 break;
+                case 27:
+                mediaGalery.CloseMG();
+                break;
             }
         }
     }
+
+    document.onkeypress = this.Keymove;
 }
 
 
